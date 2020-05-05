@@ -1,4 +1,4 @@
-## Inject Annotation
+## Inject Annotation [의존성 자동 주입]
 
 이번에는 Inject 어노테이션에 대해서 공부해보았다.
 다음은 이번에 공부한 Inject 어노테이션에 대한 목차이다.

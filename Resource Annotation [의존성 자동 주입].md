@@ -1,4 +1,4 @@
-## Resource Annotation
+## Resource Annotation [의존성 자동 주입]
 
 이번에는 Resource 어노테이션에 대해서 공부해보았다.
 다음은 Resource 어노테이션에 대한 목차이다.
