@@ -321,7 +321,7 @@ UserController 클래스에 존재하는 userLogin() 메소드를 실행하여
 @Service를 사용한 서비스이다.
 서비스는 Controller와 View를 제외한 것들을 생각하면 된다.
 따라서 DAO도 @Service를 작성하는 서비스 객체이다.
-DAO는 Database Access Object의 약자로서, 데이터베이스에 접근하기 위해서 사용되는
+DAO는 Data Access Object의 약자로서, 데이터베이스에 접근하기 위해서 사용되는
 메소드들의 집합이다.
 따라서 데이터베이스에 접근하기 위해서 insert(), select() 메소드를 지원하게 된다.
 물론 delete, update와 같이 더 만들 수 있지만 현재는 필요 없는 기능이기 때문에 제외했다.
