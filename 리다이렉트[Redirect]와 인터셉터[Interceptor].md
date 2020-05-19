@@ -56,6 +56,19 @@ public class UserController {
 
 위를 보면 알겠지만 리다이렉트를 사용하는 방법은 redirect:경로이다.
 
+#### 1-4. 의문점
+
+그러면 리다이렉트를 하지 않고 그냥 return "경로"를 통해 View로 이동하면 되는 게 아닌가요?
+
+이런 의문이 들 수 있다.
+하지만 리다이렉트를 이용해 로그인 페이지로 넘어가는 것과 로그인 페이지 View로 넘기는 것이 조금 다르다.
+
+로그인 페이지 View로 바로 보내는 일반적인 리턴방식은 원래 로그인 페이지로 넘어갔던
+Controller를 거치지 않는다.
+하지만 리다이렉트를 하게 되면 로그인 페이지로 넘기는 Controller의 메소드를 실행하게 된다.
+따라서 그냥 리턴하는 것은 컨트롤러를 더 이상 거치지 않고 페이지를 옮긴다면,
+리다이렉트는 컨트롤러를 거치고 페이지를 옮기게 된다.
+
 ### 2. 인터셉터[Interceptor]
 
 #### 2-1. 정의
@@ -99,7 +112,7 @@ afterCompletion() 메소드는 Controller가 잘 동작하여 View에 값이 전
 아래와 같이 코드를 작성하면 된다.
 
 ```java
-public class TestHandler extends HandlerInterceptorAdapter {
+public class TestHandler implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request,
                          HttpServlet response, Object handler) {
         System.out.println("컨트롤러 메소드 실행 전 출력");
@@ -128,8 +141,16 @@ public class TestHandler extends HandlerInterceptorAdapter {
 }
 ```
 
-보면 HandlerInterceptor 인터페이스가 아닌 스프링에서 지원하는 HandlerInterceptorAdapter 클래스를
-상속한다는 것을 알 수 있다.
+하지만 이렇게 인터페이스로 구현하면
+preHandle() 메소드만 사용하고 싶은데 postHandle(), afterCompletion() 메소드를 모두 구현해야하는
+단점이 생기게 된다.
 
-이는 HandlerInterceptor 인터페이스를 구현한 클래스이기 때문에 간단하게 사용할 수 있게
-스프링에서 지원한다.
+그래서 스프링에서는 HandlerInterceptorAdapter 클래스를 사용한다.
+이 클래스를 상속받아서 사용하고 싶은 메소드만 구현하면 정상적으로 원하는 기능을 사용할 수 있다.
+
+여기서 특히 주요로 봐야하는 게 preHandle() 메소드이다.
+preHandle() 메소드는 컨트롤러 메소드가 작동되기 전에 작동되는 메소드라고 했다.
+그런데 preHandle() 메소드는 리턴값으로 boolean 타입을 가진다.
+여기서 true를 리턴하게 되면 정상적으로 컨트롤러가 실행되지만
+false를 리턴하게 되면 postHandle(), afterCompletion() 메소드는 물론 실행이 되지 않고
+컨트롤러도 실행되지 않게 된다.
