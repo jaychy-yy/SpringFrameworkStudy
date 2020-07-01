@@ -149,3 +149,65 @@ public class MainClass {
 이렇게 test가 People과 Wolf 타입으로 변경이 가능한데 People과 Wolf가 서로 다른 기능을 가지는
 기괴한 현상을 볼 수 있다.
 이렇게 마치 동적으로 인터페이스를 구현한 것처럼 보이게 하는 기술이 인트로덕션이다.
+
+### 4. 컴포넌트에 상태 추가하기
+
+POJO 즉, 컴포넌트에 상태를 추가한다는 것은 딱히 지금까지 배웠던 것과 다른 개념이 아니다.
+컴포넌트에 상태를 추가할 때 모든 컴포넌트에게 인터페이스를 구현시켜서 적용시키는 것은
+동일한 기능을 모두에게 상속시키는 것이므로 적절치 못합니다.
+따라서 스프링에서는 프록시 객체 즉, AOP 기술을 이용하여 컴포넌트에 상태를 추가할 수 있도록 합니다.
+
+만약 위에서 만들었던 POJO(컴포넌트)인 test 빈에게 test를 출력할 때마다 count를 증가시키는
+기능을 넣고자 할 때 우리는 TestImpl 컴포넌트에게 새로운 인터페이스를 구현하도록 하는 것 보다는
+동적 프록시 객체를 이용하여 모든 컴포넌트가 기능을 수행하도록 하는 것이 좋다.
+
+그래서 우리는 Counter라는 인터페이스를 선언하고 CounterImpl이라는 구현체를 만들어
+프록시 객체로 생성합니다.
+
+```java
+package abc.def.ghi;
+
+public interface Counter {
+    void plus();
+    int getCount();
+}
+```
+
+```java
+package abc.def.ghi;
+
+public class CounterImpl implements Counter {
+    private int count;
+    
+    public void plus() {
+        this.count++;
+    }
+    
+    public int getCount() {
+        return count;
+    }
+}
+```
+
+그리고 IntroductionTest 클래스에 @DeclareParents를 추가하고
+@After를 작성하여 test() 메소드를 실행시킬 때마다 count 값을 1씩 올립니다.
+
+```java
+package abc.def.ghi;
+
+public class IntroductionTest {
+    @DeclareParents(
+    	value = "abc.def.ghi.*Test*",
+        defaultImpl = CounterImple.class
+    )
+    public Counter counter;
+    
+    @After("execution(* *.*(..)) && this(counter)")
+    public void printCount(Counter counter) {
+        counter.plus();
+    }
+}
+```
+
+그리고 메인 클래스에서 Test 객체를 Counter 타입으로 변경하여 getCount() 메소드를 사용하면
+자신이 test() 메소드를 몇 번 호출했는지 알 수 있다.
